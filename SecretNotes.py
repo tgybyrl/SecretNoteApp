@@ -47,11 +47,10 @@ master_entry.pack()
 #File creation
 Input = "mysecrets"
 SecretNotes = str("" + Input + ".txt")
-TextFile = open(SecretNotes, "a")
 """with open(SecretNotes, mode="a") as txt_title:
     txt_title.write("My Secret Notes:")"""
-with open(SecretNotes, mode="w") as txt_title:
-    txt_title.write("My Secret Notes:")
+"""with open(SecretNotes, mode="w") as txt_title:
+    txt_title.write("My Secret Notes:")"""
 
 
 def gen_fernet_key(passcode:bytes) -> bytes:
@@ -80,7 +79,7 @@ def encrypt_button():
     global encryption
     global encrypted
 
-    if secret_text.get("1.0", END) == "" or master_entry.get() == "":
+    if title_entry.get() == "" or  secret_text.get("1.0", END) == "" or master_entry.get() == "":
         messagebox.showerror(title="Warning",message="Please enter all of the information")
     else:
         passcode = master_entry.get()
