@@ -44,10 +44,15 @@ masterKey_title.pack()
 master_entry = Entry(width=30)
 master_entry.pack()
 
-encrypted = Text(width=30,height=18)
-
+#File creation
+Input = "mysecrets"
+SecretNotes = str("" + Input + ".txt")
+TextFile = open(SecretNotes, "a")
 """with open(SecretNotes, mode="a") as txt_title:
     txt_title.write("My Secret Notes:")"""
+with open(SecretNotes, mode="w") as txt_title:
+    txt_title.write("My Secret Notes:")
+
 
 def gen_fernet_key(passcode:bytes) -> bytes:
     assert isinstance(passcode, bytes)
@@ -65,6 +70,8 @@ fernet = Fernet(key)
 encryption = "0"
 passcode = "0"
 
+#for insert encryption in function
+encrypted = Text(width=30,height=18)
 
 def encrypt_button():
     global passcode
@@ -73,75 +80,55 @@ def encrypt_button():
     global encryption
     global encrypted
 
-    passcode = master_entry.get()
-    key = gen_fernet_key(passcode.encode('utf-8'))
-    fernet = Fernet(key)
-    data_in = secret_text.get("1.0",END)
-    encryption = fernet.encrypt(data_in.encode('utf-8'))
-    encrypted.insert("1.0", encryption)
+    if secret_text.get("1.0", END) == "" or master_entry.get() == "":
+        messagebox.showerror(title="Warning",message="Please enter all of the information")
+    else:
+        passcode = master_entry.get()
+        key = gen_fernet_key(passcode.encode('utf-8'))
+        fernet = Fernet(key)
+        data_in = secret_text.get("1.0",END)
+        encryption = fernet.encrypt(data_in.encode('utf-8'))
+        encrypted.insert("1.0", encryption)
 
-    Input = "mysecrets"
-    SecretNotes = str("" + Input + ".txt")
-    TextFile = open(SecretNotes, "a")
 
-    with open(SecretNotes,mode="a") as append_note:
-        append_note.write("\n"+title_entry.get() + "\n" + encrypted.get("1.0",END))
+        with open(SecretNotes,mode="a") as append_note:
+            append_note.write("\n"+title_entry.get() + "\n" + encrypted.get("1.0",END))
 
-    title_entry.delete(0,END)
-    """print(secret_text.get("1.0",END))
-    print(encryption)
-    print(encrypted.get())"""
-    secret_text.delete("1.0",END)
-    master_entry.delete(0,END)
-    print(encrypted.get("1.0",END))
+        title_entry.delete(0,END)
+        secret_text.delete("1.0",END)
+        master_entry.delete(0,END)
 
 def decrypt_button():
     data_in = secret_text.get("1.0", END)
-    if data_in == encrypted.get("1.0",END):
+    if master_entry.get() == "":
+        messagebox.showerror(title="Empty Input",message="Please enter all of the information")
+    elif data_in == encrypted.get("1.0", END):
         if master_entry.get() == passcode:
             decryption = fernet.decrypt(encryption).decode('utf-8')
             secret_text.delete("1.0", END)
             secret_text.insert("1.0", decryption)
         else:
-            secret_text.delete("1.0", END)
-            secret_text.insert("1.0", "Wrong Master Key")
+            messagebox.showerror(title="Wrong Key",message="Wrong master key!")
     else:
         messagebox.showerror(title="Wrong Input", message="Please make sure of encrypted info")
 
-    print(data_in)
-    print(encrypted.get("1.0",END))
 
-    """    data_in = secret_text.get("1.0", END)
-    if master_entry.get() == passcode and data_in == encrypted.get("1.0",END):
+    """data_in = secret_text.get("1.0", END)
+
+    if master_entry.get() != passcode:
+        secret_text.delete("1.0", END)
+        secret_text.insert("1.0", "Wrong Master Key")
+
+    elif data_in != encrypted.get("1.0",END):
+        messagebox.showerror(title="Wrong Input", message="Please make sure of encrypted info")
+
+    else:
+        fernet = Fernet(key)
         decryption = fernet.decrypt(encryption).decode('utf-8')
         secret_text.delete("1.0", END)
-        secret_text.insert("1.0", decryption)
-    else:
-        secret_text.delete("1.0",END)
-        secret_text.insert("1.0","Wrong Master Key")"""
+        secret_text.insert("1.0", decryption)"""
 
 
-    """if secret_text.get("1.0", END) == encrypted:
-        if master_entry.get() == passcode:
-            decryption = fernet.decrypt(encryption).decode('utf-8')
-            secret_text.delete("1.0", END)
-            secret_text.insert("1.0", decryption)
-        else:
-            secret_text.delete("1.0", END)
-            secret_text.insert("1.0", "Wrong Master Key")
-    else:
-        messagebox.showerror(title="Wrong Input", message="Please make sure of encrypted info")"""
-
-
-    """if master_entry.get() == passcode:
-            fernet = Fernet(key)
-            decryption = fernet.decrypt(encryption).decode('utf-8')
-            secret_text.delete("1.0", END)
-            secret_text.insert("1.0", decryption)
-        else:
-            fernet = Fernet(key1)
-            secret_text.delete("1.0",END)
-            secret_text.insert("1.0","Wrong Master Key")"""
 
 
 #encrypt and save button
